@@ -1,5 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, reverse
 from .models import Customer, Product, Order
+from .forms import OrderForm
 
 
 def home(request):
@@ -25,3 +26,23 @@ def customers(request, pk):
     order_count = orders.count()
     context = {"customers": customers, "orders": orders, "order_count": order_count}
     return render(request, "accounts/customer.html", context)
+
+
+def createOrder(request):
+    form = OrderForm()
+    if request.method == "POST":
+        form = OrderForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("/")
+    context = {"form": form}
+    return render(request, "accounts/order_form.html", context)
+
+
+def updateOrder(request, pk):
+    order = Order.objects.get(id=pk)
+    form = OrderForm(instance=order)
+    context = {"form": form}
+    return render(request, "accounts/order_form.html", context)
+
+

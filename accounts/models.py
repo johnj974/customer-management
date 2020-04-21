@@ -31,7 +31,6 @@ class Product(models.Model):
         return self.name
 
 
-
 class Order(models.Model):
     STATUS = (
         ("Pending", "Pending"),
