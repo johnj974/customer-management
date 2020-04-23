@@ -1,9 +1,23 @@
 from django.shortcuts import render, redirect
 from .models import Customer, Product, Order
-from .forms import OrderForm
+from .forms import OrderForm, CreateUserForm
 from django.forms import inlineformset_factory
 from .filters import OrderFilter
+from django.contrib.auth.forms import UserCreationForm
 
+
+def register(request):
+    form = CreateUserForm()
+    if request.method == "POST":
+        form = CreateUserForm(request.POST)
+        if form.is_valid():
+            form.save()
+    context = {"form": form}
+    return render(request, "accounts/register.html", context)
+
+
+def login(request):
+    return render(request, "accounts/login.html")
 
 
 def home(request):
