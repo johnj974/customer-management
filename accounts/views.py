@@ -7,12 +7,11 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from .decorators import unauthenticated_user, allowed_users
 
 
+@unauthenticated_user
 def register(request):
-    if request.user.is_authenticated:
-        return redirect("home")
-    else:
         form = CreateUserForm()
         if request.method == "POST":
             form = CreateUserForm(request.POST)
@@ -25,10 +24,8 @@ def register(request):
         return render(request, "accounts/register.html", context)
 
 
+@unauthenticated_user
 def loginpage(request):
-    if request.user.is_authenticated:
-        return redirect("home")
-    else:
         if request.method == "POST":
             username = request.POST.get("username")
             password = request.POST.get("password")
@@ -47,6 +44,7 @@ def logoutUser(request):
 
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=["admin"])
 def home(request):
     orders = Order.objects.all()
     customers = Customer.objects.all()
@@ -114,3 +112,8 @@ def deleteOrder(request, pk):
         return redirect("/")
     context = {"item": order}
     return render(request, "accounts/delete.html", context)
+
+
+def userPage(request):
+    context = {}
+    return render(request, "accounts/user.html", context)
